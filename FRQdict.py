@@ -51,12 +51,25 @@ def fourLetterFRQ(CIPHER_text):
         else:
             # fourLetterCOMBO does not exist
             FRQdict[fourLetterCOMBO] = 1
-        
+
+# get fourLetterCOMBOs in FRQdict w/ more than given "numOfFRQ"
+def getFourLetterCOMBOs(numOfFRQ):
+    fourLetterCOMBOs = dict(filter(lambda elem: len(elem[0]) == 4 and elem[1] > numOfFRQ, FRQdict.items()))
+    return fourLetterCOMBOs
+
+# get OneLetterCOMBOs in FRQdict w/ more than given "numOfFRQ"
+def getOneLetterCOMBOs(numOfFRQ):
+    oneLetterCOMBOs = dict(filter(lambda elem: len(elem[0]) == 1 and elem[1] > numOfFRQ, FRQdict.items()))        
+    return oneLetterCOMBOs
+
+# get FRQdict sorted by FRQ (most to least)
+def getSortedDict():
+    FRQdictM2L = sorted(FRQdict.items(), key=lambda x: x[1], reverse=True)
+    return FRQdictM2L ###########################
+
 # return value of given key in "FRQdict" dict
 def getValue(key):
     return FRQdict[key]
-
-## print(FRQdict.getValue(letterWithMaxFRQ)) # prints maxFRQ in FRQdict
 
 # return key in "FRQdict" w/ the max FRQ
 def getKeyWithMaxFRQ():
