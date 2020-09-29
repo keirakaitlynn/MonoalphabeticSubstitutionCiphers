@@ -1,6 +1,7 @@
 import operator
 
 FRQdict = {}
+doubleLetterCOMBOs = {}
 
 # determine how freq. 1 letter appears in given CIPHER_text
 def oneLetterFRQ(CIPHER_text):
@@ -18,13 +19,29 @@ def twoLetterFRQ(CIPHER_text):
     for i in range(len(CIPHER_text)-1):
         # determine twoLetterCOMBO
         twoLetterCOMBO = CIPHER_text[i] + CIPHER_text[i+1]
-        # 2. Count # of times this twoLetterCOMBO appears in CIPHER_text
+        # 2. If twoLetterCOMBO is a doubleLetterCOMBO, add to doubleLetterCOMBOs{}
+        if CIPHER_text[i] == CIPHER_text[i+1] and twoLetterCOMBO in doubleLetterCOMBOs:
+            doubleLetterCOMBOs[twoLetterCOMBO] += 1
+        elif CIPHER_text[i] == CIPHER_text[i+1] and twoLetterCOMBO not in doubleLetterCOMBOs:
+            doubleLetterCOMBOs[twoLetterCOMBO] = 1
+        # 3. Count # of times this twoLetterCOMBO appears in CIPHER_text
         if twoLetterCOMBO in FRQdict:
             # twoLetterCOMBO exists
             FRQdict[twoLetterCOMBO] += 1
         else:
             # twoLetterCOMBO does not exist
             FRQdict[twoLetterCOMBO] = 1
+
+### determine how freq. a DOUBLE-letter COMBO appears in given CIPHER_text
+##def doubleLetterFRQ(CIPHER_text):
+##    for i in range(len(CIPHER_text)-1):
+##        # determine doubleLetterCOMBO
+##        if CIPHER_text[i] == CIPHER_text[i+1]:
+##            doubleLetterCOMBO = CIPHER_text[i] + CIPHER_text[i+1]
+##            if doubleLetterCOMBO in FRQdict:
+##                FRQdict[doubleLetterCOMBO] += 1
+##            else:
+##                FRQdict[doubleLetterCOMBO] = 1
 
 # determine how freq. a 3-letter COMBO appears in given CIPHER_text
 def threeLetterFRQ(CIPHER_text):
@@ -67,6 +84,10 @@ def getSortedDict():
     FRQdictM2L = sorted(FRQdict.items(), key=lambda x: x[1], reverse=True)
     return FRQdictM2L ###########################
 
+# Determines if given twoLetterCOMBO is a doubleLetterCOMBO.
+def isDoubleLetterCOMBO(twoLetterCOMBO):
+    return twoLetterCOMBO in doubleLetterCOMBOs ###############
+
 # return value of given key in "FRQdict" dict
 def getValue(key):
     return FRQdict[key]
@@ -78,6 +99,9 @@ def getKeyWithMaxFRQ():
 # delete key in "FRQdict" w/ the max FRQ
 def delKeyWithMaxFRQ():
     del FRQdict[max(FRQdict.items(), key=operator.itemgetter(1))[0]]
+
+def clearDict():
+    FRQdict.clear()
 
 def isEmpty():
     return not bool(FRQdict)
@@ -93,6 +117,20 @@ def toString():
     print("FRQdict: -------")
     # for every letter/letterCOMBO tracked
     for i in FRQdictM2L:
+        # print the letter/letterCOMBO & their FRQ
+        #print(i + str(FRQdictM2L[i]))
+        print("key: " + i[0] + ", value: " + str(i[1]))
+    print("----------------")
+    print("")
+
+# print dictionary (most - > least)
+def toStringDL():
+    # dictionary (most - > least)
+    doubleLetterCOMBOsM2L = sorted(doubleLetterCOMBOs.items(), key=lambda x: x[1], reverse=True)
+    print("")
+    print("doubleLetterCOMBOs: -------")
+    # for every letter/letterCOMBO tracked
+    for i in doubleLetterCOMBOsM2L:
         # print the letter/letterCOMBO & their FRQ
         #print(i + str(FRQdictM2L[i]))
         print("key: " + i[0] + ", value: " + str(i[1]))
