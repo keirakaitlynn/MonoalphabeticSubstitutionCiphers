@@ -85,7 +85,8 @@ def getSortedDict():
     return FRQdictM2L ###########################
 
 # Determines if given twoLetterCOMBO is a doubleLetterCOMBO.
-def isDoubleLetterCOMBO(twoLetterCOMBO):
+def isDoubleLetterCOMBO(letter):
+    twoLetterCOMBO = letter + "" + letter
     return twoLetterCOMBO in doubleLetterCOMBOs ###############
 
 # return value of given key in "FRQdict" dict
