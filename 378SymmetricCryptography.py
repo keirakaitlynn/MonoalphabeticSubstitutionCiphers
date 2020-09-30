@@ -4,12 +4,13 @@ import operator
 # ATTRIBUTES: --------------------------------------------------------------
 alphabet = "abcdefghijklmnopqrstuvwxyz"
 keyDRAFT = list(alphabet) # a mutable list of chars
-#commonLetters = "etaoinsrhldcumfpgwybvkxjqz"
-#commonLetters = ["e", "t", "a", "o", "i", "n", "s", "r", "h", "l", "d", "c", "u", "m", "f", "p", "g", "w", "y", "b", "v", "k", "x", "j", "q", "z"]
+# DONT USE: #commonLetters = ["e", "t", "a", "o", "i", "n", "s", "r", "h", "l", "d", "c", "u", "m", "f", "p", "g", "w", "y", "b", "v", "k", "x", "j", "q", "z"]
 commonLetters = ["a", "e", "i", "o", "n", "s", "l", "r", "t", "h", "d", "c", "u", "m", "f", "p", "g", "w", "y", "b", "v", "k", "x", "j", "q", "z"]
-#commonLetters.reverse()
-vowels = "aeiou"
-consonants = "lstrnpcfgmdzb"
+commonLetters.reverse()
+vowels = ["a", "e", "i", "o", "u"]
+vowels.reverse()
+consonants = ["l", "s", "t", "r", "n", "p", "c", "f", "g", "m", "d", "z", "b"]
+consonants.reverse()
 commonFourLetterCOMBOs = ["tion", "atio", "that", "ther", "with", "ment", "ions", "this",
                           "here", "from", "ould", "ting", "hich", "whic", "ctio", "ence",
                           "have", "othe", "ight", "sion", "ever", "ical", "they", "inte",
@@ -118,8 +119,6 @@ def createFRQdict(CIPHER_text):
 
 # Replace most FRQ letters in the key with commonLetters
 def replaceByMaxFRQ(CIPHER_text):
-    
-    FRQdictM2L = FRQdict.getSortedDict()
 
     currScore = 0
     maxScore = 0
@@ -127,40 +126,68 @@ def replaceByMaxFRQ(CIPHER_text):
     commonLettersITERATION = 0
     vowelsINDEX = 0
     consonantsINDEX = 0
-
-    maxFRQ = FRQdict.getValue(FRQdict.getKeyWithMaxFRQ())
     
     # run this algorithm x5 times to determine which time produces the best score
     #for commonLettersITERATION in range(0, 5):
     
     if commonLettersITERATION != 0:
         swapPositions(commonLetters, commonLetters[0], commonLetters[commonLettersITERATION]) # swap firstElem w/ elem @ num of ITERATION
-        
+
+
+
+
+    FRQdictM2L = FRQdict.getSortedDict()
+    maxFRQ = FRQdict.getValue(FRQdict.getKeyWithMaxFRQ())
     commonLettersINDEX = 0 # reset index to 0 to re-loop thru commonLetters (post-swap-iteration)
-    
     # loop thru each entry in FRQdict ( most -> least )
     for entry in FRQdictM2L:
-        while len(commonLetters) != 0:
-            # If entry is 1 letter & (FRQ > avgFRQ) & is in a doubleLetterCOMBO...
-            if len(entry[0]) == 1 and FRQdict.getValue(entry[0]) > (maxFRQ/2) and FRQdict.isDoubleLetterCOMBO(entry[0]):
-                # Replace w/ the next most common VOWEL:
-                print(entry[0] + " -> " + vowels[vowelsINDEX])
-                swapLetters(entry[0], vowels[vowelsINDEX])
-                vowelsINDEX += 1
-                commonLetters.remove(vowels[vowelsINDEX])
-            # If entry is 1 letter...
-            elif len(entry[0]) == 1:
-                # Replace w/ the next most common letter:
-                print(entry[0] + " -> " + commonLetters[commonLettersINDEX])
-                swapLetters(entry[0], commonLetters[commonLettersINDEX]) # swap this entry letter w/ a commonLetter at this INDEX
-                commonLettersINDEX += 1
-                commonLetters.remove(commonLetters[commonLettersINDEX])
-            #if len(entry[0]) == 4:
-            
 
-    key_RESULT = chars2String(keyDRAFT)
-    print("Key BEFORE: " + alphabet)
-    print("Key AFTER:  " + key_RESULT)
+      # If entry is 1 letter & is not in a doubleLetterCOMBO...
+      if len(entry[0]) == 1 and not FRQdict.isDoubleLetterCOMBO(entry[0]): # and FRQdict.getValue(entry[0]) > (maxFRQ)
+        # -> Replace w/ next most commonLetter in commonLetters
+        nextMostCommonLetter = commonLetters.pop() # removes "a" from commonLetters
+        # -------------------------------------------------------------
+        if nextMostCommonLetter in vowels: 
+          vowels.remove(nextMostCommonLetter) # (if also a vowel, remove "a" from vowels too.)
+        if nextMostCommonLetter in consonants:
+          consonants.remove(nextMostCommonLetter) # (if also a consonant, remove "l" from consonants too.)
+        # -------------------------------------------------------------
+        print(entry[0] + " -> " + nextMostCommonLetter)
+        swapLetters(entry[0], nextMostCommonLetter) # swap this entry letter w/ a commonLetter
+        key_RESULT = chars2String(keyDRAFT)
+        print("Key AFTER:  " + key_RESULT)
+        print("Key BEFORE: " + alphabet)
+
+      # If entry is 1 letter & (FRQ > avgFRQ) & is in a doubleLetterCOMBO...
+      elif len(entry[0]) == 1 and FRQdict.getValue(entry[0]) > (maxFRQ/2) and FRQdict.isDoubleLetterCOMBO(entry[0]):
+        # -> Replace w/ the next most common VOWEL in commonLetters
+        nextVowel = vowels.pop() # removes "e" from vowels
+        print(entry[0] + " -> " + nextVowel)
+        commonLetters.remove(nextVowel) # (remove "e" from commonLetters too.)
+
+        swapLetters(entry[0], nextVowel)
+        key_RESULT = chars2String(keyDRAFT)
+        print("Key AFTER:  " + key_RESULT)
+        print("Key BEFORE: " + alphabet)
+
+      # If entry is 2 letters & is a doubleLetterCOMBO...
+      elif len(entry[0]) == 1 and FRQdict.isDoubleLetterCOMBO(entry[0]):
+        # -> Replace w/ the next most common VOWEL in commonLetters
+        nextConsonant = consonants.pop() # removes "l" from consonants
+        print(entry[0][0] + " -> " + nextConsonant)
+        commonLetters.remove(nextConsonant) # remove "l" from commonLetters too.
+
+        swapLetters(entry[0][0], nextConsonant)
+        key_RESULT = chars2String(keyDRAFT)
+        print("Key AFTER:  " + key_RESULT)
+        print("Key BEFORE: " + alphabet)
+
+      print(commonLetters)
+      print(consonants)
+      print(vowels)
+
+
+      
 
     print(CIPHER_text)
     print(decryptSUB(CIPHER_text, key_RESULT))
@@ -218,8 +245,8 @@ def main():
         elif option == "3": # ----------------------------------------------
             print("\nDecrypt (w/ Brute Force, Substitution):")
             FRQdict.toString()
-            
             FRQdict.toStringDL()
+            
             print(FRQdict.isDoubleLetterCOMBO("n"))
             
             enter = input("Enter to continue...")

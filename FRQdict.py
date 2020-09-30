@@ -84,10 +84,13 @@ def getSortedDict():
     FRQdictM2L = sorted(FRQdict.items(), key=lambda x: x[1], reverse=True)
     return FRQdictM2L ###########################
 
-# Determines if given twoLetterCOMBO is a doubleLetterCOMBO.
-def isDoubleLetterCOMBO(letter):
-    twoLetterCOMBO = letter + "" + letter
+# Determines if given letter(s) is a doubleLetterCOMBO.
+def isDoubleLetterCOMBO(letterOrLetters):
+  if (len(letterOrLetters) == 1):
+    twoLetterCOMBO = letterOrLetters + "" + letterOrLetters
     return twoLetterCOMBO in doubleLetterCOMBOs ###############
+  else:
+    return letterOrLetters in doubleLetterCOMBOs
 
 # return value of given key in "FRQdict" dict
 def getValue(key):
