@@ -136,7 +136,6 @@ def toStringDL():
     # for every letter/letterCOMBO tracked
     for i in doubleLetterCOMBOsM2L:
         # print the letter/letterCOMBO & their FRQ
-        #print(i + str(FRQdictM2L[i]))
         print("key: " + i[0] + ", value: " + str(i[1]))
     print("----------------")
     print("")

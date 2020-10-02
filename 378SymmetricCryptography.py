@@ -1,9 +1,10 @@
 import FRQdict
-import operator
 
-# ATTRIBUTES: --------------------------------------------------------------
+# keira: ATTRIBUTES: ---------------------------------------------------------------------------------------------------
 alphabet = "abcdefghijklmnopqrstuvwxyz"
 keyDRAFT = list(alphabet) # a mutable list of chars
+possibleKeys = {}
+
 # DONT USE: #commonLetters = ["e", "t", "a", "o", "i", "n", "s", "r", "h", "l", "d", "c", "u", "m", "f", "p", "g", "w", "y", "b", "v", "k", "x", "j", "q", "z"]
 commonLetters = ["a", "e", "i", "o", "n", "s", "l", "r", "t", "h", "d", "c", "u", "m", "f", "p", "g", "w", "y", "b", "v", "k", "x", "j", "q", "z"]
 commonLetters.reverse()
@@ -17,22 +18,22 @@ commonFourLetterCOMBOs = ["tion", "atio", "that", "ther", "with", "ment", "ions"
                           "ough", "ance", "were", "tive", "over", "ding", "pres", "nter",
                           "comp", "able", "heir", "thei", "ally", "ated", "ring", "ture",
                           "cont", "ents", "cons", "rati", "thin", "part", "form", "ning",
-                          "ecti", "some"] #################################
+                          "ecti", "some"]
 expFreqsIncludingSpace = [0.0651738, 0.0124248, 0.0217339, 0.0349835, 0.1041442, 0.0197881,
                           0.0158610, 0.0492888, 0.0558094, 0.0009033, 0.0050529, 0.0331490,
                           0.0202124, 0.0564513, 0.0596302, 0.0137645, 0.0008606, 0.0497563,
                           0.0515760, 0.0729357, 0.0225134, 0.0082903, 0.0171272, 0.0013692,
-                          0.0145984, 0.0007836, 0.1918182] ###### DELETE / REPLACE
+                          0.0145984, 0.0007836, 0.1918182]
 
-# METHODS: ------------------------------------------------------------
-# Convert a listOfChars to a String.
+# keira: METHODS: ------------------------------------------------------------------------------------------------------------------
+# kkkkk: Convert a listOfChars to a String.
 def chars2String(listOfChars):
     str = ""
     for char in listOfChars:
         str += char
     return str
 
-# Returns a string of the given word's WordPattern. #################################
+# kkkkk: Returns a string of the given word's WordPattern.
 def getWordPattern(word):
     word = word.upper()
     nextNum = 0
@@ -46,9 +47,9 @@ def getWordPattern(word):
         wordPattern.append(letterNums[letter])
     return '.'.join(wordPattern)
 
-# Returns number of recognizable words in given string ###### DELETE / REPLACE
+# kkkkk: Returns number of recognizable words in given string ###### DELETE / REPLACE
 def getScore(text):
-    upString = text.upper()
+    upString = text.lower()
     print(upString)
     CHARS_CONSIDERED = 27;
     charCounts = [0] * CHARS_CONSIDERED
@@ -72,18 +73,21 @@ def getScore(text):
       chiSquaredScore += (charFreqs[i]-expFreqsIncludingSpace[i])*(charFreqs[i]-expFreqsIncludingSpace[i])/(expFreqsIncludingSpace[i])
     return chiSquaredScore
 
+# kkkkk: encryption algorithm
 def encrypt(message, key):
     CIPHER_text = ""
     for i in message:
         CIPHER_text += key[alphabet.index(i)]
     return CIPHER_text
 
+# kkkkk: decryption algorithm (SUBSTITUTION)
 def decryptSUB(CIPHER_text, key):
     PLAIN_text = ""
     for i in CIPHER_text:
         PLAIN_text += alphabet[key.index(i)]
     return PLAIN_text
 
+# kkkkk: decryption algorithm (SHIFT)
 def decryptSHIFT(CIPHER_text, key):
     PLAIN_text = ""
     for char in CIPHER_text:
@@ -93,7 +97,7 @@ def decryptSHIFT(CIPHER_text, key):
             PLAIN_text += char
     return PLAIN_text
 
-# Shift Cipher (calls decryptSHIFT x26 times)
+# kkkkk: Shift Cipher (calls decryptSHIFT x26 times)
 def option2(CIPHER_text):
     # A. Try shifting (Test 25 diff. possible keys).
     for key in range(1, 26):
@@ -104,63 +108,28 @@ def option3(CIPHER_text):
     #do something
     return CIPHER_text
 
-# Tally up the FRQs of 1-, 2-, 3- & 4-Letter COMBOs in CIPHER_text. Store in FRQdict.
+# kkkkk: Tally up the FRQs of 1-, 2-, 3- & 4-Letter COMBOs in CIPHER_text. Store in FRQdict.
 def createFRQdict(CIPHER_text):
     # - tally up occurences of 4-Letter COMBOs in CIPHER_text
     FRQdict.fourLetterFRQ(CIPHER_text)
     # - tally up occurences of 3-Letter COMBOs in CIPHER_text
     FRQdict.threeLetterFRQ(CIPHER_text)
-    # - tally up occurrences of DOUBLE-Letter COMBOs in CIPHER_text ################# COMPLETE
-    #FRQdict.doubleLetterFRQ(CIPHER_text)
     # - tally up occurences of 2-Letter COMBOs in CIPHER_text
     FRQdict.twoLetterFRQ(CIPHER_text)
     # - tally up occurences of 1-Letter COMBOs in CIPHER_text
     FRQdict.oneLetterFRQ(CIPHER_text)
 
-# Replace most FRQ letters in the key with commonLetters
-def replaceByMaxFRQ(CIPHER_text):
-
-    currScore = 0
-    maxScore = 0
-
-    commonLettersITERATION = 0
-    vowelsINDEX = 0
-    consonantsINDEX = 0
-    
-    # run this algorithm x5 times to determine which time produces the best score
-    #for commonLettersITERATION in range(0, 5):
-    
-    if commonLettersITERATION != 0:
-        swapPositions(commonLetters, commonLetters[0], commonLetters[commonLettersITERATION]) # swap firstElem w/ elem @ num of ITERATION
-
-
-
+# kkkkk: Replace most FRQ letters in the key with commonLetters. This generates a key. Returns resulting text.
+def replaceMostFRQLetters(CIPHER_text):
 
     FRQdictM2L = FRQdict.getSortedDict()
     maxFRQ = FRQdict.getValue(FRQdict.getKeyWithMaxFRQ())
-    commonLettersINDEX = 0 # reset index to 0 to re-loop thru commonLetters (post-swap-iteration)
-    # loop thru each entry in FRQdict ( most -> least )
+
+    # TODO: loop thru each entry in FRQdict ( most -> least )
     for entry in FRQdictM2L:
-
-      # If entry is 1 letter & is not in a doubleLetterCOMBO...
-      if len(entry[0]) == 1 and not FRQdict.isDoubleLetterCOMBO(entry[0]): # and FRQdict.getValue(entry[0]) > (maxFRQ)
-        # -> Replace w/ next most commonLetter in commonLetters
-        nextMostCommonLetter = commonLetters.pop() # removes "a" from commonLetters
-        # -------------------------------------------------------------
-        if nextMostCommonLetter in vowels: 
-          vowels.remove(nextMostCommonLetter) # (if also a vowel, remove "a" from vowels too.)
-        if nextMostCommonLetter in consonants:
-          consonants.remove(nextMostCommonLetter) # (if also a consonant, remove "l" from consonants too.)
-        # -------------------------------------------------------------
-        print(entry[0] + " -> " + nextMostCommonLetter)
-        swapLetters(entry[0], nextMostCommonLetter) # swap this entry letter w/ a commonLetter
-        key_RESULT = chars2String(keyDRAFT)
-        print("Key AFTER:  " + key_RESULT)
-        print("Key BEFORE: " + alphabet)
-
-      # If entry is 1 letter & (FRQ > avgFRQ) & is in a doubleLetterCOMBO...
-      elif len(entry[0]) == 1 and FRQdict.getValue(entry[0]) > (maxFRQ/2) and FRQdict.isDoubleLetterCOMBO(entry[0]):
-        # -> Replace w/ the next most common VOWEL in commonLetters
+      # TODO: If entry is a FRQ letter & is not in a doubleLetterCOMBO...
+      if len(entry[0]) == 1 and FRQdict.getValue(entry[0]) == (maxFRQ) and (not FRQdict.isDoubleLetterCOMBO(entry[0])):
+        # TODO: -> Replace w/ the next most common VOWEL in commonLetters
         nextVowel = vowels.pop() # removes "e" from vowels
         print(entry[0] + " -> " + nextVowel)
         commonLetters.remove(nextVowel) # (remove "e" from commonLetters too.)
@@ -170,9 +139,21 @@ def replaceByMaxFRQ(CIPHER_text):
         print("Key AFTER:  " + key_RESULT)
         print("Key BEFORE: " + alphabet)
 
-      # If entry is 2 letters & is a doubleLetterCOMBO...
+      # TODO: If entry is 1 letter & (FRQ > avgFRQ) & is in a doubleLetterCOMBO...
+      elif len(entry[0]) == 1 and FRQdict.getValue(entry[0]) > (maxFRQ/2) and FRQdict.isDoubleLetterCOMBO(entry[0]):
+        # TODO: -> Replace w/ the next most common VOWEL in commonLetters
+        nextConsonant = consonants.pop() # removes "e" from vowels
+        print(entry[0] + " -> " + nextConsonant)
+        commonLetters.remove(nextConsonant) # (remove "e" from commonLetters too.)
+
+        swapLetters(entry[0], nextConsonant)
+        key_RESULT = chars2String(keyDRAFT)
+        print("Key AFTER:  " + key_RESULT)
+        print("Key BEFORE: " + alphabet)
+
+      # TODO: If entry is 2 letters & is a doubleLetterCOMBO...
       elif len(entry[0]) == 1 and FRQdict.isDoubleLetterCOMBO(entry[0]):
-        # -> Replace w/ the next most common VOWEL in commonLetters
+        # TODO: -> Replace w/ the next most common VOWEL in commonLetters
         nextConsonant = consonants.pop() # removes "l" from consonants
         print(entry[0][0] + " -> " + nextConsonant)
         commonLetters.remove(nextConsonant) # remove "l" from commonLetters too.
@@ -182,27 +163,26 @@ def replaceByMaxFRQ(CIPHER_text):
         print("Key AFTER:  " + key_RESULT)
         print("Key BEFORE: " + alphabet)
 
-      print(commonLetters)
-      print(consonants)
-      print(vowels)
+    print("")
+    # save the resulting key & the score of the resulting text in "possibleKeys"
+    key_RESULT = chars2String(keyDRAFT)
+    text_RESULT = decryptSUB(CIPHER_text, keyDRAFT)
+    score_RESULT = getScore(text_RESULT)
+    possibleKeys[key_RESULT] = score_RESULT
 
+    return text_RESULT
 
-      
-
-    print(CIPHER_text)
-    print(decryptSUB(CIPHER_text, key_RESULT))
-    print("whatsinanamearosebyanyothernamewouldsmellassweet")
-
+# kkkkk: Swap 2 elem's given an array.
 def swapPositions(array, elem1, elem2): 
     a, b = array.index(elem1), array.index(elem2)
     array[b], array[a] = array[a], array[b]
 
-# Swap 2 letters in Key to be used by Substitution Cipher.
+# kkkkk: Swap 2 letters in Key to be used by Substitution Cipher.
 def swapLetters(letterFromCipherText, commonLetter):
     a, b = keyDRAFT.index(letterFromCipherText), keyDRAFT.index(commonLetter)
     keyDRAFT[b], keyDRAFT[a] = keyDRAFT[a], keyDRAFT[b]
     
-# Swap each of the letters of fourLetterCOMBO
+# kkkkk: Swap each of the letters of fourLetterCOMBO
 #   w/ each of the letters of commonFourLetterCOMBO
 #   in Key to be used by Substitution Cipher.
 def swapFourLetterCOMBOs(fourLetterCOMBO, commonFourLetterCOMBO):
@@ -212,7 +192,7 @@ def swapFourLetterCOMBOs(fourLetterCOMBO, commonFourLetterCOMBO):
     swapLetters(fourLetterCOMBO[3], commonFourLetterCOMBO[3])
     
 
-# MAIN PROGRAM: ------------------------------------------------------------
+# keira: MAIN PROGRAM: ------------------------------------------------------------
 def main():
 
     # 1. Prompt User for CIPHER_text
@@ -255,7 +235,8 @@ def main():
             #option3(CIPHER_text)
             #replaceFourLetterCOMBOs(CIPHER_text)
             #replaceOneLetterCOMBOs(CIPHER_text)
-            replaceByMaxFRQ(CIPHER_text)
+            replaceMostFRQLetters(CIPHER_text)
+            print("whatsinanamearosebyanyothernamewouldsmellassweet")
         elif option == "4": # ----------------------------------------------
             print("\nDecrypt (w/ Key)") 
         elif option == "5": # ----------------------------------------------
