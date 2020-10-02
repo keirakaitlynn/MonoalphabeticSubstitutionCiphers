@@ -117,8 +117,19 @@ def option2(CIPHER_text):
 
 # Substitution Cipher
 def option3(CIPHER_text):
-    # do something
-    return CIPHER_text
+    determineVowelsAndConsonants(CIPHER_text)
+    replaceWithVowelsOrConsonants(CIPHER_text)
+    sandwichMethod(CIPHER_text)
+    replaceRemainingLetters()
+
+    key_INITIAL = keyDRAFT
+    text_INITIAL = decryptSUB(CIPHER_text, key_INITIAL)
+    score_INITIAL = getScore(text_INITIAL)
+    possibleKeys[keyDRAFT] = score_INITIAL
+
+    print(alphabet)
+    print(chars2String(key_INITIAL))
+    print(text_INITIAL)
 
 
 # kkkkk: Tally up the FRQs of 1-, 2-, 3- & 4-Letter COMBOs in CIPHER_text. Store in FRQdict.
@@ -140,10 +151,13 @@ def determineVowelsAndConsonants(CIPHER_text):
 
     # kkkkk: loop thru each entry in FRQdict ( most -> least )
     for entry in FRQdictM2L:
-        # kkkkk: If entry is a FRQ letter & is not in a doubleLetterCOMBO...
-        if len(entry[0]) == 1 and FRQdict.getValue(entry[0]) == (maxFRQ) and (
-        not FRQdict.isDoubleLetterCOMBO(entry[0])):
+        # kkkkk: If entry is 1 letter & entry's FRQ == maxFRQ
+        # ###& is not in a doubleLetterCOMBO...
+        if len(entry[0]) == 1 and FRQdict.getValue(entry[0]) == (maxFRQ): ## and (not FRQdict.isDoubleLetterCOMBO(entry[0])):
             # kkkkk: -> Add entry to isVowel, set to TRUE
+            isVowel[entry[0]] = True
+        # kkkkk: If entry is 1 letter & (FRQ > avgFRQ) & is NOT in a doubleLetterCOMBO...
+        elif len(entry[0]) == 1 and FRQdict.getValue(entry[0]) > (maxFRQ / 2) and (not FRQdict.isDoubleLetterCOMBO(entry[0])):
             isVowel[entry[0]] = True
         # kkkkk: If entry is 1 letter & (FRQ > avgFRQ) & is in a doubleLetterCOMBO...
         elif len(entry[0]) == 1 and FRQdict.getValue(entry[0]) > (maxFRQ / 2) and FRQdict.isDoubleLetterCOMBO(entry[0]):
@@ -174,28 +188,6 @@ def replaceWithVowelsOrConsonants(CIPHER_text):
             print("Key AFTER:  " + key_RESULT)
             print("Key BEFORE: " + alphabet)
 
-        # else:  # kkkkk: If letter is NOT a vowel...
-        #     # kkkkk: -> Replace w/ the next most common CONSONANT in commonLetters
-        #     nextConsonant = consonants.pop()  # removes "l" from consonants
-        #
-        #     print(letter + " -> " + nextConsonant)
-        #
-        #     commonLetters.remove(nextConsonant)  # remove "l" from commonLetters too.
-        #     swapLetters(letter, nextConsonant)
-        #
-        #     key_RESULT = chars2String(keyDRAFT)
-        #     print("Key AFTER:  " + key_RESULT)
-        #     print("Key BEFORE: " + alphabet)
-
-    # print("")
-    # # save the resulting key & the score of the resulting text in "possibleKeys"
-    # key_RESULT = chars2String(keyDRAFT)
-    # text_RESULT = decryptSUB(CIPHER_text, keyDRAFT)
-    # score_RESULT = getScore(text_RESULT)
-    # possibleKeys[key_RESULT] = score_RESULT
-    #
-    # return text_RESULT
-
 # TODO: PART 3: Replace letters before & after VOWELs (letters where isVowel[letter] == True)
 #  w/ next common CONSONANT in commonLetters
 def sandwichMethod(CIPHER_text):
@@ -211,6 +203,7 @@ def sandwichMethod(CIPHER_text):
                 print(letterOnLEFT + " -> " + commonConsonant)
                 commonLetters.remove(commonConsonant)
                 swapLetters(letterOnLEFT, commonConsonant) # swap letterOnLeft of vowel w/ a consonant
+                isVowel[letterOnLEFT] = False # add to isVowel, mark as CONSONANT
 
                 key_RESULT = chars2String(keyDRAFT)
                 print("Key AFTER:  " + key_RESULT)
@@ -221,10 +214,26 @@ def sandwichMethod(CIPHER_text):
                     print(letterOnRIGHT + " -> " + nextCommonConsonant)
                     commonLetters.remove(nextCommonConsonant)
                     swapLetters(CIPHER_text[letter+1], nextCommonConsonant)
+                    isVowel[letterOnRIGHT] = False  # add to isVowel, mark as CONSONANT
 
                     key_RESULT = chars2String(keyDRAFT)
                     print("Key AFTER:  " + key_RESULT)
                     print("Key BEFORE: " + alphabet)
+
+# TODO: PART 4: Replace remaining letters w/ remaining commonLetters. (not in isVowel)
+def replaceRemainingLetters():
+    FRQdictM2L = FRQdict.getSortedDict()
+    maxFRQ = FRQdict.getValue(FRQdict.getKeyWithMaxFRQ())
+
+    for entry in FRQdictM2L:
+        if entry[0] not in isVowel and len(entry[0]) == 1:
+            nextCommonLetter = commonLetters.pop()
+            print(entry[0] + " -> " + nextCommonLetter)
+            swapLetters(entry[0], nextCommonLetter)
+
+            key_RESULT = chars2String(keyDRAFT)
+            print("Key AFTER:  " + key_RESULT)
+            print("Key BEFORE: " + alphabet)
 
 # kkkkk: Swap 2 elem's given an array.
 def swapPositions(array, elem1, elem2):
@@ -290,9 +299,8 @@ def main():
             # option3(CIPHER_text)
             # replaceFourLetterCOMBOs(CIPHER_text)
             # replaceOneLetterCOMBOs(CIPHER_text)
-            determineVowelsAndConsonants(CIPHER_text)
-            replaceWithVowelsOrConsonants(CIPHER_text)
-            sandwichMethod(CIPHER_text)
+            option3(CIPHER_text)
+
             print("whatsinanamearosebyanyothernamewouldsmellassweet")
         elif option == "4":  # ----------------------------------------------
             print("\nDecrypt (w/ Key)")
