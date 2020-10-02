@@ -2,6 +2,7 @@ import FRQdict
 
 # keira: ATTRIBUTES: ---------------------------------------------------------------------------------------------------
 alphabet = "abcdefghijklmnopqrstuvwxyz"
+global keyDRAFT
 keyDRAFT = list(alphabet)  # a mutable list of chars
 possibleKeys = {}
 
@@ -30,6 +31,7 @@ isVowel = {}
 
 
 # keira: METHODS: ------------------------------------------------------------------------------------------------------------------
+
 # kkkkk: Convert a listOfChars to a String.
 def chars2String(listOfChars):
     str = ""
@@ -113,23 +115,6 @@ def option2(CIPHER_text):
     # A. Try shifting (Test 25 diff. possible keys).
     for key in range(1, 26):
         print("Key = " + str(key) + ": " + decryptSHIFT(CIPHER_text, key))
-
-
-# Substitution Cipher
-def option3(CIPHER_text):
-    determineVowelsAndConsonants(CIPHER_text)
-    replaceWithVowelsOrConsonants(CIPHER_text)
-    sandwichMethod(CIPHER_text)
-    replaceRemainingLetters()
-
-    key_INITIAL = keyDRAFT
-    text_INITIAL = decryptSUB(CIPHER_text, key_INITIAL)
-    score_INITIAL = getScore(text_INITIAL)
-    possibleKeys[keyDRAFT] = score_INITIAL
-
-    print(alphabet)
-    print(chars2String(key_INITIAL))
-    print(text_INITIAL)
 
 
 # kkkkk: Tally up the FRQs of 1-, 2-, 3- & 4-Letter COMBOs in CIPHER_text. Store in FRQdict.
@@ -255,6 +240,30 @@ def swapFourLetterCOMBOs(fourLetterCOMBO, commonFourLetterCOMBO):
     swapLetters(fourLetterCOMBO[1], commonFourLetterCOMBO[1])
     swapLetters(fourLetterCOMBO[2], commonFourLetterCOMBO[2])
     swapLetters(fourLetterCOMBO[3], commonFourLetterCOMBO[3])
+
+# Substitution Cipher
+def option3(CIPHER_text):
+    determineVowelsAndConsonants(CIPHER_text)
+    replaceWithVowelsOrConsonants(CIPHER_text)
+    sandwichMethod(CIPHER_text)
+    replaceRemainingLetters()
+
+    key_INITIAL = keyDRAFT
+    text_INITIAL = decryptSUB(CIPHER_text, key_INITIAL)
+    score_INITIAL = getScore(text_INITIAL)
+    possibleKeys[keyDRAFT] = score_INITIAL
+
+    print(alphabet)
+    print(chars2String(key_INITIAL))
+    print(text_INITIAL)
+
+    # reinitialize keyDRAFT
+    keyDRAFT = list(alphabet) # abcdefgh..
+    # reinitialize vowels
+    # reinitialize consonants
+    # shuffle vowels,
+    # shuffle consonants
+    # replaceWithVowelsOrConsonants(CIPHER_text) --- changes keyDRAFT
 
 
 # keira: MAIN PROGRAM: ------------------------------------------------------------
